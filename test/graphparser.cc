@@ -90,6 +90,7 @@ void BollardsGatesAndAccess(const std::string& config_file) {
   EXPECT_FALSE(way_85744121.moped_backward());
   EXPECT_FALSE(way_85744121.bike_backward());
   EXPECT_FALSE(way_85744121.bus_backward());
+  EXPECT_EQ(way_85744121.z_level(), 0);
 
   auto way_86260080 = GetWay(86260080, ways);
   EXPECT_TRUE(way_86260080.auto_forward());
@@ -102,6 +103,7 @@ void BollardsGatesAndAccess(const std::string& config_file) {
   EXPECT_TRUE(way_86260080.bike_backward());
   EXPECT_TRUE(way_86260080.bus_backward());
   EXPECT_TRUE(way_86260080.moped_backward());
+  EXPECT_EQ(way_86260080.z_level(), 0);
 
   auto way_161683833 = GetWay(161683833, ways);
   EXPECT_TRUE(way_161683833.auto_forward());
@@ -114,6 +116,7 @@ void BollardsGatesAndAccess(const std::string& config_file) {
   EXPECT_TRUE(way_161683833.bike_backward());
   EXPECT_TRUE(way_161683833.bus_backward());
   EXPECT_TRUE(way_161683833.moped_backward());
+  EXPECT_EQ(way_161683833.z_level(), 0);
 
   // We split set the uses at bollards and gates.
   auto node = GetNode(392700757, way_nodes);
@@ -331,6 +334,16 @@ void Baltimore(const std::string& config_file) {
   sequence<OSMWay> ways(ways_file, false);
   ways.sort(way_predicate);
 
+  // check z-level
+  for (auto way_info : std::vector<std::pair<uint64_t, int8_t>>{{49655065, 2}, {49655062, -1}}) {
+    auto way = GetWay(way_info.first, ways);
+    EXPECT_EQ(way.z_level(), way_info.second);
+    auto tagged_values = way.GetTaggedValues({});
+    EXPECT_EQ(tagged_values.size(), 1);
+    EXPECT_EQ(tagged_values.front(), std::string(1, static_cast<char>(TaggedValue::kZLevel)) +
+                                         static_cast<char>(way_info.second));
+  }
+
   // bike_forward and reverse is set to false by default.  Meaning defaults for
   // highway = pedestrian.  Bike overrides bicycle=designated and/or cycleway=shared_lane
   // make it bike_forward and reverse = true
@@ -345,6 +358,7 @@ void Baltimore(const std::string& config_file) {
   EXPECT_FALSE(way_216240466.bus_backward());
   EXPECT_FALSE(way_216240466.moped_backward());
   EXPECT_TRUE(way_216240466.bike_backward());
+  EXPECT_EQ(way_216240466.z_level(), 0);
 
   // access for all
   auto way_138388359 = GetWay(138388359, ways);
@@ -358,6 +372,7 @@ void Baltimore(const std::string& config_file) {
   EXPECT_TRUE(way_138388359.bus_backward());
   EXPECT_TRUE(way_138388359.moped_backward());
   EXPECT_TRUE(way_138388359.bike_backward());
+  EXPECT_EQ(way_138388359.z_level(), 0);
 
   // footway...pedestrian only
   auto way_133689121 = GetWay(133689121, ways);
@@ -371,6 +386,7 @@ void Baltimore(const std::string& config_file) {
   EXPECT_FALSE(way_133689121.bus_backward());
   EXPECT_FALSE(way_133689121.moped_backward());
   EXPECT_FALSE(way_133689121.bike_backward());
+  EXPECT_EQ(way_133689121.z_level(), 0);
 
   // oneway
   auto way_49641455 = GetWay(49641455, ways);
@@ -384,6 +400,7 @@ void Baltimore(const std::string& config_file) {
   EXPECT_FALSE(way_49641455.bus_backward());
   EXPECT_FALSE(way_49641455.moped_backward());
   EXPECT_FALSE(way_49641455.bike_backward());
+  EXPECT_EQ(way_49641455.z_level(), 0);
 
   // Oneway test.  Make sure auto backward is set for ways where oneway=no.
   // Check Forward/Backward/Pedestrian access is set correctly for way 192573108.
@@ -398,6 +415,7 @@ void Baltimore(const std::string& config_file) {
   EXPECT_TRUE(way_192573108.bus_backward());
   EXPECT_TRUE(way_192573108.moped_backward());
   EXPECT_TRUE(way_192573108.bike_backward());
+  EXPECT_EQ(way_192573108.z_level(), 0);
 
   sequence<OSMWayNode> way_nodes(way_nodes_file, false, true);
   way_nodes.sort(node_predicate);

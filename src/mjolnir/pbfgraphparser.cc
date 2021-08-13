@@ -188,6 +188,11 @@ public:
       }
     };
 
+    tag_handlers_["layer"] = [this]() {
+      auto z_level = static_cast<int8_t>(std::stoi(tag_.second));
+      way_.set_z_level(z_level);
+    };
+
     tag_handlers_["road_class"] = [this]() {
       RoadClass roadclass = (RoadClass)std::stoi(tag_.second);
       switch (roadclass) {

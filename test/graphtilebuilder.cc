@@ -110,7 +110,10 @@ TEST(GraphTileBuilder, TestDuplicateEdgeInfo) {
   // add edge info for node 0 to node 1
   bool added = false;
   test.AddEdgeInfo(0, GraphId(0, 2, 0), GraphId(0, 2, 1), 1234, 555, 0, 120,
-                   std::list<PointLL>{{0, 0}, {1, 1}}, {"einzelweg"}, {"1xyz tunnel"}, 0, added);
+                   std::list<PointLL>{{0, 0}, {1, 1}}, {"einzelweg"},
+                   {"1xyz tunnel",
+                    std::string(1, static_cast<char>(TaggedValue::kZLevel)) + char(-1)},
+                   0, added);
   EXPECT_EQ(test.edge_offset_map_.size(), 1) << "There should be exactly two of these in here";
 
   // add edge info for node 1 to node 0
@@ -133,11 +136,12 @@ TEST(GraphTileBuilder, TestDuplicateEdgeInfo) {
   EXPECT_EQ(n2.at(0), "einzelweg");
 
   auto n3 = ei.GetNames(true);
-  EXPECT_EQ(n3.size(), 1);
+  EXPECT_EQ(n3.size(), 2);
   EXPECT_EQ(n3.at(0), "1xyz tunnel"); // we always return the tag type in getnames
+  EXPECT_EQ(n3.at(1), std::string(1, static_cast<char>(TaggedValue::kZLevel)) + char(-1));
 
   auto names_and_types = ei.GetNamesAndTypes(true);
-  EXPECT_EQ(names_and_types.size(), 2);
+  EXPECT_EQ(names_and_types.size(), 3);
 
   auto n4 = names_and_types.at(0);
   EXPECT_EQ(n4.first, "einzelweg");
@@ -146,6 +150,10 @@ TEST(GraphTileBuilder, TestDuplicateEdgeInfo) {
   auto n5 = names_and_types.at(1);
   EXPECT_EQ(n5.first, "xyz tunnel"); // no tag type in GetNamesAndTypes
   EXPECT_EQ(n5.second, false);
+
+  auto n6 = names_and_types.at(2);
+  EXPECT_EQ(n6.first, std::string(1, char(-1)));
+  EXPECT_EQ(n6.second, false);
 
   names_and_types = ei.GetNamesAndTypes(false);
   EXPECT_EQ(names_and_types.size(), 1);
@@ -161,11 +169,18 @@ TEST(GraphTileBuilder, TestDuplicateEdgeInfo) {
   EXPECT_EQ(n4.first, "einzelweg");
   EXPECT_EQ(n4.second, false);
 
+<<<<<<< HEAD
   auto tagged_names_and_types = ei.GetTaggedNamesAndTypes();
   for (const auto& tagged_name_and_type : tagged_names_and_types) {
     EXPECT_EQ(tagged_name_and_type.first, "xyz tunnel");
     EXPECT_EQ(static_cast<TaggedName>(tagged_name_and_type.second), TaggedName::kTunnel);
   }
+=======
+  const auto& tags = ei.GetTags();
+  EXPECT_EQ(tags.size(), 2);
+  EXPECT_EQ(tags.find(TaggedValue::kTunnel)->second, "xyz tunnel");
+  EXPECT_EQ(tags.find(TaggedValue::kZLevel)->second, std::string(1, char(-1)));
+>>>>>>> 3ef2a6666 (Add Z-level field to EdgeInfo)
 }
 
 TEST(GraphTileBuilder, TestAddBins) {
