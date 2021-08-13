@@ -169,18 +169,10 @@ TEST(GraphTileBuilder, TestDuplicateEdgeInfo) {
   EXPECT_EQ(n4.first, "einzelweg");
   EXPECT_EQ(n4.second, false);
 
-<<<<<<< HEAD
-  auto tagged_names_and_types = ei.GetTaggedNamesAndTypes();
-  for (const auto& tagged_name_and_type : tagged_names_and_types) {
-    EXPECT_EQ(tagged_name_and_type.first, "xyz tunnel");
-    EXPECT_EQ(static_cast<TaggedName>(tagged_name_and_type.second), TaggedName::kTunnel);
-  }
-=======
   const auto& tags = ei.GetTags();
   EXPECT_EQ(tags.size(), 2);
   EXPECT_EQ(tags.find(TaggedValue::kTunnel)->second, "xyz tunnel");
   EXPECT_EQ(tags.find(TaggedValue::kZLevel)->second, std::string(1, char(-1)));
->>>>>>> 3ef2a6666 (Add Z-level field to EdgeInfo)
 }
 
 TEST(GraphTileBuilder, TestAddBins) {
